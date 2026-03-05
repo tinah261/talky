@@ -231,3 +231,94 @@
   gap: 6px;
   justify-content: flex-end;
 }
+
+/* ── Réactions rapides ───────────────────────────────────────────────────── */
+.quickReact {
+  position: relative;
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
+
+.reactTrigger {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all var(--transition);
+}
+
+.row:hover .reactTrigger { opacity: 1; }
+.reactTrigger:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.reactPicker {
+  position: absolute;
+  bottom: 30px;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+}
+
+.reactBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.reactBtn:hover {
+  background: var(--bg-hover);
+  transform: scale(1.2);
+}
+
+/* ── Affichage des réactions ─────────────────────────────────────────────── */
+.reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.reactionBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.reactionBadge:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  transform: scale(1.05);
+}

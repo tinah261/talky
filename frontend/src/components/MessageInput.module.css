@@ -1,61 +1,87 @@
 ﻿.bar {
   display: flex;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
   padding: 14px 20px;
   border-top: 1px solid var(--border);
   background: var(--bg-secondary);
   flex-shrink: 0;
+  position: relative; /* Indispensable pour positionner l'EmojiPicker */
+  overflow: visible !important; /* Pour que le picker dépasse de la barre */
 }
 
 .inputWrap {
   flex: 1;
+  display: flex;
+  align-items: flex-end; /* Garde le bouton smiley en bas si le texte grandit */
   background: var(--bg-tertiary);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  transition: border-color var(--transition), box-shadow var(--transition);
-  overflow: hidden;
+  border-radius: var(--radius-lg, 12px);
+  transition: all 0.2s;
+  overflow: visible; 
 }
 
 .inputWrap:focus-within {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--border-focus, #3b82f6);
+  box-shadow: 0 0 0 3px var(--accent-glow, rgba(59, 130, 246, 0.1));
+}
+
+.emojiBtn {
+  background: none;
+  border: none;
+  padding: 10px 0 10px 14px !important;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+  font-family: "Segoe UI Emoji", sans-serif;
+}
+
+.emojiBtn:hover {
+  transform: scale(1.15);
 }
 
 .textarea {
   display: block;
-  width: 100%;
+  flex: 1;
   background: transparent;
   border: none;
   outline: none;
   padding: 11px 16px;
   color: var(--text-primary);
-  font-family: var(--font-main);
   font-size: 14px;
   line-height: 1.55;
   resize: none;
-  overflow-y: auto;
   max-height: 140px;
   min-height: 42px;
+  /* Fallback pour les emojis dans le texte */
+  font-family: var(--font-main, sans-serif), "Segoe UI Emoji", "Apple Color Emoji";
 }
 
-.textarea::placeholder { color: var(--text-muted); }
-
 .sendBtn {
-  width: 42px !important;
-  height: 42px !important;
+  width: 44px !important;  /* Taille agrandie */
+  height: 44px !important;
   padding: 0 !important;
   border-radius: 50% !important;
   flex-shrink: 0;
-  transition: all var(--transition) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s !important;
+  background-color: var(--accent, #3b82f6);
+  color: white;
+  border: none;
 }
 
 .sendBtn:hover:not(:disabled) {
-  transform: scale(1.08) !important;
+  transform: scale(1.1) !important;
+  filter: brightness(1.1);
 }
 
 .sendBtn:disabled {
-  background: var(--bg-hover) !important;
-  color: var(--text-muted) !important;
-  box-shadow: none !important;
+  background: var(--bg-hover, #e0e0e0) !important;
+  color: var(--text-muted, #aaa) !important;
+  cursor: not-allowed;
 }

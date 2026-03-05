@@ -162,3 +162,23 @@
   max-width: 260px;
   line-height: 1.6;
 }
+
+/* ── Typing indicator ────────────────────────────────────────────────────── */
+.typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-style: italic;
+}
+
+.typingDots {
+  display: inline-block;
+  animation: typingDots 1.4s infinite;
+}
+
+@keyframes typingDots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}

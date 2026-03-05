@@ -59,12 +59,17 @@ export default function ChatWindow({ messages, currentUser, loading, onMessageUp
   )
 }
 
+const QUICK_REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏']
+
 function MessageBubble({ msg, isMine, onMessageUpdated }) {
-  const [showMenu,  setShowMenu]  = useState(false)
-  const [editing,   setEditing]   = useState(false)
-  const [editText,  setEditText]  = useState(msg.content)
-  const [loading,   setLoading]   = useState(false)
+  const [showMenu,     setShowMenu]     = useState(false)
+  const [showReact,    setShowReact]    = useState(false)
+  const [editing,      setEditing]      = useState(false)
+  const [editText,     setEditText]     = useState(msg.content)
+  const [loading,      setLoading]      = useState(false)
+  const [reactions,    setReactions]    = useState(msg.reactions || {})
   const menuRef = useRef(null)
+  const reactRef = useRef(null)
 
   const time   = msg.createdAt
     ? new Date(msg.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
@@ -73,12 +78,32 @@ function MessageBubble({ msg, isMine, onMessageUpdated }) {
   const isDeleted = msg.isDeleted ?? false
   const isEdited  = !!msg.editedAt
 
-  // Fermer le menu si clic ailleurs
+  // Fermer les menus si clic ailleurs
   useEffect(() => {
-    const handler = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setShowMenu(false) }
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setShowMenu(false)
+      if (reactRef.current && !reactRef.current.contains(e.target)) setShowReact(false)
+    }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
+
+  // Mettre à jour les réactions depuis le message
+  useEffect(() => {
+    setReactions(msg.reactions || {})
+  }, [msg.reactions])
+
+  // ── Réagir ─────────────────────────────────────────────────────────────────
+  const handleReact = async (emoji) => {
+    setShowReact(false)
+    try {
+      const { data } = await api.post(`/reactions/${msg.id}`, { emoji })
+      setReactions(data.reactions || {})
+      onMessageUpdated?.({ ...msg, reactions: data.reactions })
+    } catch (e) {
+      console.error('reaction error', e)
+    }
+  }
 
   // ── Supprimer ──────────────────────────────────────────────────────────────
   const handleDelete = async () => {
@@ -170,6 +195,44 @@ function MessageBubble({ msg, isMine, onMessageUpdated }) {
               ? <span className={styles.deletedText}>🚫 Ce message a été supprimé</span>
               : msg.content
             }
+          </div>
+        )}
+
+        {/* Réactions rapides (hover) */}
+        {!isDeleted && (
+          <div className={styles.quickReact} ref={reactRef}>
+            <button
+              className={styles.reactTrigger}
+              onClick={() => setShowReact(v => !v)}
+              title="Réagir"
+            >+</button>
+            {showReact && (
+              <div className={`${styles.reactPicker} fade-in`}>
+                {QUICK_REACTIONS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    className={styles.reactBtn}
+                    onClick={() => handleReact(emoji)}
+                  >{emoji}</button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Affichage des réactions */}
+        {Object.keys(reactions).length > 0 && (
+          <div className={styles.reactions}>
+            {Object.entries(reactions).map(([emoji, userIds]) => (
+              <button
+                key={emoji}
+                className={styles.reactionBadge}
+                onClick={() => handleReact(emoji)}
+                title={`${userIds.length} réaction(s)`}
+              >
+                {emoji} {userIds.length > 1 && userIds.length}
+              </button>
+            ))}
           </div>
         )}
 

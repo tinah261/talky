@@ -1,0 +1,66 @@
+.picker {
+  position: absolute;
+  bottom: 85px; /* Ajusté pour être au dessus de la barre d'input */
+  right: 20px;
+  width: 320px;
+  max-height: 380px;
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid var(--border, #e0e0e0);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 10000;
+  animation: popIn 0.2s ease-out;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.categories {
+  overflow-y: auto;
+  padding: 12px;
+  scrollbar-width: thin;
+}
+
+.category {
+  margin-bottom: 15px;
+}
+
+.categoryLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary, #888);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.emojiGrid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+
+.emojiBtn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  /* Crucial pour Windows */
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+.emojiBtn:hover {
+  background: var(--bg-hover, #f0f0f0);
+  transform: scale(1.2);
+}

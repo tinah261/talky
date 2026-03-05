@@ -7,6 +7,8 @@ import ContactList  from '../components/ContactList.jsx'
 import ChatWindow   from '../components/ChatWindow.jsx'
 import MessageInput   from '../components/MessageInput.jsx'
 import ProfileModal   from '../components/ProfileModal.jsx'
+import EmojiPicker from '../components/EmojiPicker.jsx'
+import { useNotificationSound } from '../hooks/UseNotificationSound.js'
 import styles from './Home.module.css'
 
 export default function Home() {
@@ -18,6 +20,9 @@ export default function Home() {
   const [messages,        setMessages]        = useState([])
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [showProfile,    setShowProfile]    = useState(false)
+  const [typing,         setTyping]         = useState(false)
+  const typingTimeoutRef = useRef(null)
+  const { playSound } = useNotificationSound()
 
   // ── Charger contacts + conversations et fusionner ──────────────────────────
   const fetchContacts = useCallback(async () => {
@@ -119,6 +124,30 @@ export default function Home() {
             return curr
           })
         })
+
+        // Indicateur "en train d'écrire"
+        client.subscribe('/user/queue/typing', (frame) => {
+          const data = JSON.parse(frame.body)
+          setSelectedContact((curr) => {
+            if (curr && data.senderId === curr.id) {
+              setTyping(true)
+              clearTimeout(typingTimeoutRef.current)
+              typingTimeoutRef.current = setTimeout(() => setTyping(false), 3000)
+            }
+            return curr
+          })
+        })
+
+        // Réactions en temps réel
+        client.subscribe('/user/queue/reactions', (frame) => {
+          const data = JSON.parse(frame.body)
+          setMessages(prev =>
+            prev.map(m => m.id === data.messageId
+              ? { ...m, reactions: data.reactions }
+              : m
+            )
+          )
+        })
       },
       onStompError: frame => console.error('STOMP error', frame),
     })
@@ -202,7 +231,10 @@ export default function Home() {
               <div>
                 <p className={styles.chatName}>{selectedContact.username}</p>
                 <p className={styles.chatStatus}>
-                  {selectedContact.isOnline ? ' En ligne' : ' Hors ligne'}
+                  {typing
+                    ? <span className={styles.typing}>en train d'écrire<span className={styles.typingDots}>...</span></span>
+                    : (selectedContact.isOnline ? '🟢 en ligne' : '⚫ hors ligne')
+                  }
                 </p>
               </div>
             </div>
@@ -218,7 +250,11 @@ export default function Home() {
               }}
             />
 
-            <MessageInput onSend={sendMessage} />
+            <MessageInput
+              onSend={sendMessage}
+              receiverId={selectedContact.id}
+              stompClient={stompClient.current}
+            />
           </>
         ) : (
           <div className={styles.empty}>

@@ -1,29 +1,28 @@
-# ======================
-# Java / Spring Boot
-# ======================
-backend/target/
-backend/.mvn/
-backend/*.log
-
-# ======================
-# Node / Vite
-# ======================
-frontend/node_modules/
-frontend/dist/
-
-# ======================
-# IDE
-# ======================
-.idea/
-.vscode/
-
-# ======================
-# OS
-# ======================
+# Fichiers temporaires
+*.log
+*.swp
 .DS_Store
 Thumbs.db
 
-# ======================
-# Env
-# ======================
+# Dossiers de build
+**/target/
+**/node_modules/
+**/dist/
+**/build/
+
+# Environnement local
 .env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store

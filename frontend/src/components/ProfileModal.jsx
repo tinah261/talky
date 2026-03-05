@@ -1,15 +1,13 @@
 import React, { useState, useRef } from 'react'
+import { useTheme } from '../hooks/useTheme.js'
 import api from '../services/api.js'
 import styles from './ProfileModal.module.css'
-
-const STATUSES = ['Disponible', 'Occupé', 'Ne pas déranger', 'Absent', '']
 
 export default function ProfileModal({ user, onClose, onUpdated }) {
   const [tab, setTab]           = useState('profile') // 'profile' | 'password'
   const [form, setForm]         = useState({
     username: user?.username || '',
     email:    user?.email    || '',
-    status:   user?.status   || '',
     avatar:   user?.avatar   || '',
   })
   const [passForm, setPassForm] = useState({
@@ -22,6 +20,7 @@ export default function ProfileModal({ user, onClose, onUpdated }) {
   const [error,    setError]    = useState('')
   const [success,  setSuccess]  = useState('')
   const fileRef = useRef(null)
+  const { theme, toggleTheme } = useTheme()
 
   // ── Changer champ ──────────────────────────────────────────────────────────
   const handleChange = (e) =>
@@ -73,7 +72,6 @@ export default function ProfileModal({ user, onClose, onUpdated }) {
       const { data } = await api.put('/users/profile', {
         username: form.username,
         email:    form.email,
-        status:   form.status,
         avatar:   form.avatar,
       })
       // Mettre à jour le localStorage
@@ -145,6 +143,27 @@ export default function ProfileModal({ user, onClose, onUpdated }) {
         {tab === 'profile' && (
           <form onSubmit={handleSaveProfile} className={styles.form}>
 
+            {/* Thème */}
+            <div className={styles.field}>
+              <label className={styles.label}>Apparence</label>
+              <div className={styles.themeToggle}>
+                <button
+                  type="button"
+                  className={`${styles.themeBtn} ${theme === 'light' ? styles.themeActive : ''}`}
+                  onClick={() => theme !== 'light' && toggleTheme()}
+                >
+                  ☀️ Clair
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.themeBtn} ${theme === 'dark' ? styles.themeActive : ''}`}
+                  onClick={() => theme !== 'dark' && toggleTheme()}
+                >
+                  🌙 Sombre
+                </button>
+              </div>
+            </div>
+
             {/* Avatar */}
             <div className={styles.avatarSection}>
               <div className={styles.avatarWrap} onClick={() => fileRef.current?.click()}>
@@ -180,8 +199,6 @@ export default function ProfileModal({ user, onClose, onUpdated }) {
               <input className="input" type="email" name="email" value={form.email}
                 onChange={handleChange} required />
             </div>
-
-            
 
             {error   && <p className={styles.error}>{error}</p>}
             {success && <p className={styles.successMsg}>{success}</p>}
